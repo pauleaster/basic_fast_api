@@ -1,6 +1,6 @@
 # app/main.py
 import warnings
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import APIRouter, FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from . import crud, schemas
 from .database import SessionLocal
@@ -9,6 +9,9 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 app = FastAPI()
 
+router = APIRouter(prefix="/django/api")
+
+app.include_router(router)
 
 # Dependency to get the database session
 def get_db():
@@ -18,13 +21,13 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/contacts/", response_model=schemas.Contact)
+@router.post("/contacts/", response_model=schemas.Contact)
 def create_contact(contact: schemas.ContactCreate, db: Session = Depends(get_db)):
     print("Creating contact")
     print(f"Contact = \n{contact}\n")
     return crud.create_contact(db=db, contact=contact)
 
-@app.get("/contacts/{contact_id}", response_model=schemas.Contact)
+@router.get("/contacts/{contact_id}", response_model=schemas.Contact)
 def read_contact(contact_id: int, db: Session = Depends(get_db)):
     print(f"Reading contact with id = {contact_id}")
     db_contact = crud.get_contact(db, contact_id=contact_id)
@@ -32,7 +35,7 @@ def read_contact(contact_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Contact not found")
     return db_contact
 
-@app.delete("/contacts/{contact_id}")
+@router.delete("/contacts/{contact_id}")
 def delete_contact(contact_id: int, db: Session = Depends(get_db)):
     if not crud.delete_contact(db=db, contact_id=contact_id):
         raise HTTPException(status_code=404, detail="Contact not found")
