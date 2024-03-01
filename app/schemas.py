@@ -1,4 +1,4 @@
-# schemas.py
+# app/schemas.py
 from pydantic import ConfigDict, BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime

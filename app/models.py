@@ -1,6 +1,6 @@
-# models.py
+# app/models.py
 from sqlalchemy import Column, Integer, String, Text, DateTime
-from database import Base
+from .database import Base
 from sqlalchemy.sql import func
 
 class Contact(Base):
